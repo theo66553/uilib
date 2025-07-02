@@ -24,22 +24,20 @@ function FontHandler:New(Name, Weight, Style, Asset)
     local fontPath = fontsDir .. "/" .. Asset.Id
     local jsonPath = fontsDir .. "/" .. Name .. ".json"
 
-    if not isfile(fontPath) then
-        writefile(fontPath, game:HttpGet(Asset.Url))
-    end
+    -- Always write the font file
+    writefile(fontPath, game:HttpGet(Asset.Url))
 
-    if not isfile(jsonPath) then
-        local descriptor = {
-            name = Name,
-            faces = {{
-                name = "Regular",
-                weight = Weight,
-                style = Style,
-                assetId = getcustomasset(fontPath)
-            }}
-        }
-        writefile(jsonPath, HttpService:JSONEncode(descriptor))
-    end
+    -- Always write the descriptor file
+    local descriptor = {
+        name = Name,
+        faces = { {
+            name = "Regular",
+            weight = Weight,
+            style = Style,
+            assetId = getcustomasset(fontPath)
+        } }
+    }
+    writefile(jsonPath, HttpService:JSONEncode(descriptor))
 
     return getcustomasset(jsonPath)
 end
@@ -50,7 +48,6 @@ function FontHandler:Get(Name)
         return Font.new(getcustomasset(jsonPath))
     end
 end
-
 
 FontHandler:New("ProggyClean", 200, "normal", {
     Id = "ProggyClean.ttf",
